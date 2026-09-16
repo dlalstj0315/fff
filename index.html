@@ -2,328 +2,1114 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ROOM CHAT + MINIGAMES</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>ROOM CHAT - MINI GAMES</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;font-family:Arial,"Noto Sans KR",sans-serif}
-body{background:#080c17;color:#fff;overflow:hidden}
-button,input{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
+*{
+ box-sizing:border-box;
+ -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+ margin:0;
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ background:#080c17;
+ color:white;
+ font-family:Arial,"Noto Sans KR",sans-serif;
+}
+
+button,input{
+ font:inherit;
+}
+
+button{
+ cursor:pointer;
+ touch-action:manipulation;
+}
+
+input{
+ -webkit-appearance:none;
+}
+
+.hidden{
+ display:none!important;
+}
+
+/* ================= START ================= */
 
 #start{
- width:100%;height:100vh;display:flex;align-items:center;justify-content:center;
- padding:20px;
+ width:100%;
+ height:100dvh;
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:18px;
  background:
- radial-gradient(circle at 15% 15%,#334d9b 0,transparent 35%),
- radial-gradient(circle at 85% 85%,#65317f 0,transparent 35%),#080c17
+ radial-gradient(circle at 10% 10%,#3d4fa0 0,transparent 35%),
+ radial-gradient(circle at 90% 90%,#6d327f 0,transparent 35%),
+ #080c17;
 }
+
 .card{
- width:min(470px,100%);padding:32px;border-radius:25px;background:#151d33;
- border:1px solid #303a58;box-shadow:0 30px 90px #0008
+ width:min(460px,100%);
+ padding:28px;
+ border-radius:25px;
+ background:#151d33;
+ border:1px solid #303b58;
+ box-shadow:0 30px 90px #0009;
 }
-.logo{text-align:center;font-size:38px;font-weight:900;letter-spacing:3px}
-.sub{text-align:center;color:#8995b3;margin:8px 0 28px}
-label{display:block;color:#aab5cf;font-size:13px;margin:14px 0 7px}
+
+.logo{
+ text-align:center;
+ font-size:36px;
+ font-weight:900;
+ letter-spacing:2px;
+}
+
+.sub{
+ text-align:center;
+ color:#8b97b5;
+ margin:8px 0 25px;
+ font-size:14px;
+}
+
+label{
+ display:block;
+ color:#aeb8ce;
+ font-size:13px;
+ margin:13px 0 7px;
+}
+
 .input{
- width:100%;padding:14px;border:1px solid #35405e;border-radius:12px;
- outline:none;background:#10172a;color:#fff
+ width:100%;
+ height:50px;
+ padding:0 14px;
+ border:1px solid #36415e;
+ border-radius:12px;
+ outline:none;
+ background:#10172a;
+ color:white;
 }
-.input:focus{border-color:#7189ff}
+
+.input:focus{
+ border-color:#7187ff;
+}
+
 .primary{
- width:100%;padding:14px;border:0;border-radius:12px;margin-top:14px;
- background:linear-gradient(135deg,#587cff,#895cff);color:white;font-weight:800
+ width:100%;
+ height:50px;
+ margin-top:13px;
+ border:0;
+ border-radius:12px;
+ background:linear-gradient(135deg,#5d7cff,#8759e9);
+ color:white;
+ font-weight:900;
 }
-.divider{display:flex;align-items:center;gap:10px;margin:22px 0;color:#606b87;font-size:12px}
-.divider:before,.divider:after{content:"";height:1px;flex:1;background:#303950}
-.codeInput{text-align:center;font-size:22px;font-weight:800;letter-spacing:8px}
-#error{min-height:20px;color:#ff7189;text-align:center;margin-top:13px;font-size:13px}
+
+.divider{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ color:#606c88;
+ margin:21px 0;
+ font-size:12px;
+}
+
+.divider:before,
+.divider:after{
+ content:"";
+ height:1px;
+ flex:1;
+ background:#303950;
+}
+
+.codeInput{
+ text-align:center;
+ font-size:20px;
+ font-weight:900;
+ letter-spacing:7px;
+}
+
+#error{
+ min-height:20px;
+ text-align:center;
+ color:#ff7188;
+ font-size:13px;
+ margin-top:10px;
+}
+
+/* ================= APP ================= */
 
 #app{
- width:100%;height:100vh;display:grid;grid-template-columns:245px 1fr;background:#0a0f1d
+ width:100%;
+ height:100dvh;
+ min-height:100vh;
+ display:grid;
+ grid-template-columns:240px 1fr;
+ background:#090e1b;
 }
-.sidebar{display:flex;flex-direction:column;background:#101629;border-right:1px solid #252e46}
-.roomInfo{padding:20px;border-bottom:1px solid #252e46}
-.roomName{font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.sidebar{
+ display:flex;
+ flex-direction:column;
+ background:#101629;
+ border-right:1px solid #252e46;
+ min-height:0;
+}
+
+.roomInfo{
+ padding:18px;
+ border-bottom:1px solid #252e46;
+}
+
+.roomName{
+ font-weight:900;
+ font-size:17px;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+}
+
 .code{
- margin-top:10px;padding:9px;text-align:center;letter-spacing:5px;font-size:18px;
- font-weight:900;color:#9eaeff;background:#202a48;border-radius:9px
+ margin-top:10px;
+ padding:10px;
+ text-align:center;
+ background:#202a48;
+ border-radius:9px;
+ color:#a7b5ff;
+ font-size:18px;
+ font-weight:900;
+ letter-spacing:5px;
 }
+
 .copy{
- width:100%;margin-top:9px;padding:9px;border:1px solid #34405e;border-radius:9px;
- background:#161e34;color:#c8d0e5
+ width:100%;
+ height:38px;
+ margin-top:8px;
+ border:1px solid #35405e;
+ border-radius:9px;
+ background:#171f35;
+ color:#d1d9ec;
 }
-.peopleTitle{padding:18px 18px 8px;color:#7e8aa8;font-size:12px;font-weight:800}
-.users{flex:1;overflow:auto;padding:0 10px}
-.user{display:flex;align-items:center;gap:9px;padding:9px;border-radius:10px}
-.user:hover{background:#ffffff08}
+
+.peopleTitle{
+ padding:16px 17px 7px;
+ color:#7e8ba8;
+ font-size:12px;
+ font-weight:900;
+}
+
+.users{
+ flex:1;
+ min-height:0;
+ overflow-y:auto;
+ padding:0 9px;
+}
+
+.user{
+ display:flex;
+ align-items:center;
+ gap:9px;
+ padding:9px;
+ border-radius:10px;
+}
+
 .avatar{
- width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
- justify-content:center;background:linear-gradient(135deg,#617cff,#965cff);
- font-size:12px;font-weight:900;flex-shrink:0
+ width:34px;
+ height:34px;
+ flex:none;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border-radius:50%;
+ background:linear-gradient(135deg,#607cff,#925be9);
+ font-weight:900;
+ font-size:12px;
 }
-.uname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
-.host{color:#ffd467;font-size:10px;margin-left:5px}
-.sideButtons{padding:12px}
+
+.uname{
+ overflow:hidden;
+ white-space:nowrap;
+ text-overflow:ellipsis;
+ font-size:14px;
+}
+
+.host{
+ color:#ffd463;
+ font-size:10px;
+ margin-left:5px;
+}
+
+.sideButtons{
+ padding:10px;
+}
+
 .sideButton{
- width:100%;padding:11px;margin-top:7px;border:1px solid #303b58;
- border-radius:10px;background:#171f35;color:#d5dcef
+ width:100%;
+ height:42px;
+ margin-top:7px;
+ border:1px solid #303b58;
+ border-radius:10px;
+ background:#171f35;
+ color:#d4dcee;
 }
-.leave{color:#ff8a9b;background:#211621;border-color:#49303d}
 
-.main{min-width:0;display:flex;flex-direction:column}
+.leave{
+ color:#ff8a9d;
+}
+
+/* ================= CHAT ================= */
+
+.main{
+ min-width:0;
+ min-height:0;
+ display:flex;
+ flex-direction:column;
+}
+
 .header{
- height:65px;display:flex;align-items:center;justify-content:space-between;
- padding:0 20px;background:#0e1425;border-bottom:1px solid #252e46
+ height:62px;
+ flex:none;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 18px;
+ background:#0e1425;
+ border-bottom:1px solid #252e46;
 }
-.headerTitle{font-size:17px;font-weight:800}
-.status{color:#7e8aa6;font-size:12px}
+
+.headerTitle{
+ font-weight:900;
+}
+
+.status{
+ color:#8490aa;
+ font-size:11px;
+}
+
 .dot{
- display:inline-block;width:8px;height:8px;border-radius:50%;background:#3ee18b;
- box-shadow:0 0 9px #3ee18b;margin-right:6px
+ display:inline-block;
+ width:8px;
+ height:8px;
+ border-radius:50%;
+ background:#3de38b;
+ box-shadow:0 0 8px #3de38b;
+ margin-right:5px;
 }
 
-.messages{flex:1;overflow-y:auto;padding:20px}
-.message{display:flex;margin-bottom:15px}
-.message.mine{justify-content:flex-end}
-.msgContent{max-width:min(70%,650px)}
-.msgTop{display:flex;gap:8px;margin-bottom:4px;font-size:11px;color:#aeb9d1}
-.message.mine .msgTop{justify-content:flex-end}
-.time{color:#59657f;font-size:9px}
+.messages{
+ flex:1;
+ min-height:0;
+ overflow-y:auto;
+ padding:18px;
+ overscroll-behavior:contain;
+}
+
+.message{
+ display:flex;
+ margin-bottom:14px;
+}
+
+.message.mine{
+ justify-content:flex-end;
+}
+
+.msgContent{
+ max-width:min(70%,650px);
+}
+
+.msgTop{
+ display:flex;
+ gap:8px;
+ margin-bottom:4px;
+ font-size:11px;
+ color:#aeb8ce;
+}
+
+.message.mine .msgTop{
+ justify-content:flex-end;
+}
+
+.time{
+ color:#59657e;
+ font-size:9px;
+}
+
 .bubble{
- padding:10px 13px;border-radius:13px;background:#19223a;
- line-height:1.45;word-break:break-word
+ padding:10px 13px;
+ border-radius:13px;
+ background:#19223a;
+ line-height:1.45;
+ word-break:break-word;
 }
-.mine .bubble{background:linear-gradient(135deg,#5974e7,#7657d9)}
-.system{text-align:center;color:#65718c;font-size:11px;margin:12px}
-.system span{padding:6px 10px;background:#121a2d;border-radius:20px}
 
-.chatInputArea{padding:12px 16px;background:#0e1425;border-top:1px solid #252e46}
-.form{display:flex;gap:8px}
+.mine .bubble{
+ background:linear-gradient(135deg,#5975e7,#7658d8);
+}
+
+.system{
+ text-align:center;
+ color:#69758e;
+ font-size:11px;
+ margin:12px;
+}
+
+.system span{
+ display:inline-block;
+ padding:6px 10px;
+ border-radius:20px;
+ background:#121a2d;
+}
+
+.chatInputArea{
+ flex:none;
+ padding:10px 14px;
+ padding-bottom:max(10px,env(safe-area-inset-bottom));
+ background:#0e1425;
+ border-top:1px solid #252e46;
+}
+
+.form{
+ display:flex;
+ gap:7px;
+}
+
 .chatInput{
- flex:1;min-width:0;padding:12px;border:1px solid #303a56;border-radius:12px;
- outline:none;background:#141c31;color:#fff
+ flex:1;
+ min-width:0;
+ height:46px;
+ padding:0 12px;
+ border:1px solid #303b56;
+ border-radius:12px;
+ outline:none;
+ background:#141c31;
+ color:white;
 }
-.send{width:65px;border:0;border-radius:12px;background:#5f79f5;color:#fff;font-weight:800}
 
-/* MINI GAME */
+.send{
+ width:62px;
+ flex:none;
+ border:0;
+ border-radius:12px;
+ background:#607af4;
+ color:white;
+ font-weight:900;
+}
+
+/* ================= GAME ================= */
 
 #gamePanel{
- position:fixed;inset:0;background:#080c17;z-index:50;
- display:flex;flex-direction:column
+ position:fixed;
+ inset:0;
+ z-index:50;
+ display:flex;
+ flex-direction:column;
+ width:100%;
+ height:100dvh;
+ min-height:100vh;
+ background:#080c17;
 }
-.gameHeader{
- height:65px;display:flex;align-items:center;justify-content:space-between;
- padding:0 20px;background:#11182b;border-bottom:1px solid #303a56
-}
-.gameTitle{font-size:19px;font-weight:900}
-.closeGame{padding:9px 13px;border:1px solid #3a4562;border-radius:9px;background:#202943;color:#fff}
-.gameBody{flex:1;overflow:auto;padding:25px}
-.gameMenu{max-width:850px;margin:auto}
-.gameIntro{text-align:center;margin-bottom:22px}
-.gameIntro h1{margin:0 0 7px;font-size:30px}
-.gameIntro p{color:#8995b2}
-.gameGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.gameCard{
- min-height:130px;padding:18px;border:1px solid #303b58;border-radius:17px;
- background:#131b30;text-align:left;color:#fff
-}
-.gameCard:hover{border-color:#6f86ff;background:#18213a}
-.gameIcon{font-size:30px}
-.gameCard b{display:block;margin-top:10px;font-size:16px}
-.gameCard span{display:block;color:#7f8ba7;font-size:12px;margin-top:5px}
-.modeBox{margin:22px 0;text-align:center}
-.modeBtn{
- padding:10px 18px;margin:4px;border:1px solid #35405d;border-radius:10px;
- background:#151e34;color:#cbd3e8
-}
-.modeBtn.selected{background:#607af4;border-color:#8497ff;color:#fff}
-.startGame{
- display:block;margin:18px auto 0;padding:13px 30px;border:0;border-radius:12px;
- background:linear-gradient(135deg,#5b7cff,#895cff);color:white;font-weight:900
-}
-.wait{text-align:center;color:#8d99b5;margin-top:13px}
-.playArea{max-width:900px;margin:auto;text-align:center}
-.playArea h2{font-size:27px}
-.playInfo{color:#8e9ab7;margin-bottom:20px}
-.gameBoard{
- position:relative;min-height:380px;border-radius:20px;background:#111a2d;
- border:1px solid #303b58;overflow:hidden
-}
-.reactionBoard{
- width:100%;height:380px;border:0;background:#d73848;color:#fff;
- font-size:30px;font-weight:900
-}
-.reactionBoard.green{background:#22b86a}
-.reactionBoard.false{background:#762936}
-.target{
- position:absolute;width:65px;height:65px;border-radius:50%;border:5px solid #fff;
- background:#ff536e;box-shadow:0 0 20px #ff536e
-}
-.numberBox{
- padding:35px;font-size:65px;font-weight:900;letter-spacing:10px;
- background:#161f35;border-radius:18px;margin:20px 0
-}
-.answerInput{
- padding:13px;text-align:center;border-radius:11px;border:1px solid #38435f;
- background:#10172a;color:#fff;outline:none;width:min(300px,100%)
-}
-.actionBtn{
- padding:12px 20px;border:0;border-radius:10px;background:#617af5;color:white;
- font-weight:800;margin:6px
-}
-.colorChoices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:25px}
-.colorChoice{
- width:100px;height:60px;border:3px solid #fff;border-radius:12px;color:#fff;
- font-weight:900
-}
-.sequenceGrid{
- display:grid;grid-template-columns:repeat(3,90px);gap:10px;justify-content:center;margin:25px
-}
-.seqBtn{
- width:90px;height:70px;border:0;border-radius:12px;background:#273451;color:#fff;font-size:20px;font-weight:900
-}
-.seqBtn.lit{background:#fff;color:#111}
-.result{
- max-width:600px;margin:20px auto;padding:20px;border:1px solid #34405e;
- border-radius:17px;background:#131c31
-}
-.result h2{margin-top:0}
-.resultRow{
- display:flex;justify-content:space-between;padding:11px;border-bottom:1px solid #27324b
-}
-.winner{color:#ffd35e;font-weight:900}
-.small{color:#7e8aa5;font-size:12px}
 
-/* MODAL */
+.gameHeader{
+ height:60px;
+ flex:none;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 15px;
+ background:#11182b;
+ border-bottom:1px solid #303a56;
+}
+
+.gameTitle{
+ font-size:18px;
+ font-weight:900;
+}
+
+.closeGame{
+ min-height:40px;
+ padding:0 13px;
+ border:1px solid #3a4562;
+ border-radius:9px;
+ background:#202943;
+ color:white;
+}
+
+.gameBody{
+ flex:1;
+ min-height:0;
+ overflow-y:auto;
+ overflow-x:hidden;
+ padding:18px;
+ overscroll-behavior:contain;
+}
+
+.gameMenu{
+ width:min(900px,100%);
+ margin:auto;
+}
+
+.gameIntro{
+ text-align:center;
+ margin-bottom:18px;
+}
+
+.gameIntro h1{
+ margin:4px 0 7px;
+ font-size:29px;
+}
+
+.gameIntro p{
+ margin:0;
+ color:#8995b2;
+ font-size:13px;
+}
+
+.gameGrid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:11px;
+}
+
+.gameCard{
+ min-height:125px;
+ padding:16px;
+ border:1px solid #303b58;
+ border-radius:16px;
+ background:#131b30;
+ color:white;
+ text-align:left;
+}
+
+.gameCard:active{
+ transform:scale(.98);
+}
+
+.gameIcon{
+ font-size:30px;
+}
+
+.gameCard b{
+ display:block;
+ margin-top:9px;
+}
+
+.gameCard span{
+ display:block;
+ margin-top:5px;
+ color:#7f8ba7;
+ font-size:11px;
+}
+
+.modeBox{
+ margin:19px 0;
+ text-align:center;
+}
+
+.modeBtn{
+ min-height:42px;
+ padding:0 18px;
+ margin:4px;
+ border:1px solid #35405d;
+ border-radius:10px;
+ background:#151e34;
+ color:#cbd3e8;
+}
+
+.modeBtn.selected{
+ background:#607af4;
+ border-color:#8497ff;
+ color:white;
+}
+
+.startGame{
+ display:block;
+ min-height:47px;
+ padding:0 28px;
+ margin:17px auto 0;
+ border:0;
+ border-radius:12px;
+ background:linear-gradient(135deg,#5b7cff,#895cff);
+ color:white;
+ font-weight:900;
+}
+
+.wait{
+ text-align:center;
+ color:#8d99b5;
+ margin-top:11px;
+ font-size:12px;
+}
+
+.playArea{
+ width:min(900px,100%);
+ margin:auto;
+ text-align:center;
+}
+
+.playArea h2{
+ font-size:26px;
+ margin:4px 0 8px;
+}
+
+.playInfo{
+ color:#8e9ab7;
+ font-size:13px;
+ margin-bottom:16px;
+}
+
+.gameBoard{
+ position:relative;
+ width:100%;
+ height:min(55vh,430px);
+ min-height:300px;
+ border-radius:20px;
+ background:#111a2d;
+ border:1px solid #303b58;
+ overflow:hidden;
+ touch-action:none;
+}
+
+.reactionBoard{
+ width:100%;
+ height:100%;
+ border:0;
+ border-radius:19px;
+ background:#d73848;
+ color:white;
+ font-size:29px;
+ font-weight:900;
+ touch-action:none;
+ user-select:none;
+}
+
+.reactionBoard.green{
+ background:#21b86a;
+}
+
+.reactionBoard.false{
+ background:#742937;
+}
+
+.target{
+ position:absolute;
+ width:72px;
+ height:72px;
+ border-radius:50%;
+ border:5px solid white;
+ background:#ff536e;
+ box-shadow:0 0 20px #ff536e;
+ transform:translate(-50%,-50%);
+ touch-action:none;
+}
+
+.numberBox{
+ padding:28px 12px;
+ margin:18px 0;
+ border-radius:18px;
+ background:#161f35;
+ font-size:60px;
+ font-weight:900;
+ letter-spacing:8px;
+}
+
+.answerInput{
+ width:min(300px,100%);
+ height:48px;
+ padding:0 12px;
+ border:1px solid #38435f;
+ border-radius:11px;
+ outline:none;
+ background:#10172a;
+ color:white;
+ text-align:center;
+}
+
+.actionBtn{
+ min-height:44px;
+ padding:0 20px;
+ margin:7px;
+ border:0;
+ border-radius:10px;
+ background:#617af5;
+ color:white;
+ font-weight:900;
+}
+
+.colorChoices{
+ display:flex;
+ justify-content:center;
+ gap:9px;
+ flex-wrap:wrap;
+ margin:20px;
+}
+
+.colorChoice{
+ width:100px;
+ height:58px;
+ border:3px solid white;
+ border-radius:12px;
+ color:white;
+ font-weight:900;
+}
+
+.sequenceGrid{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(65px,90px));
+ gap:10px;
+ justify-content:center;
+ margin:20px;
+}
+
+.seqBtn{
+ width:100%;
+ height:70px;
+ border:0;
+ border-radius:12px;
+ background:#273451;
+ color:white;
+ font-size:20px;
+ font-weight:900;
+ touch-action:manipulation;
+}
+
+.result{
+ width:min(600px,100%);
+ margin:18px auto;
+ padding:19px;
+ border:1px solid #34405e;
+ border-radius:17px;
+ background:#131c31;
+}
+
+.result h2{
+ margin-top:0;
+}
+
+.resultRow{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:11px 5px;
+ border-bottom:1px solid #27324b;
+}
+
+.winner{
+ color:#ffd35e;
+ font-weight:900;
+}
+
+.small{
+ color:#7e8aa5;
+ font-size:11px;
+ line-height:1.7;
+}
+
+/* ================= MODAL ================= */
 
 #codeModal{
- position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;
- z-index:100
+ position:fixed;
+ inset:0;
+ z-index:100;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+ background:#000b;
 }
+
 .modal{
- width:min(400px,90%);padding:30px;text-align:center;border-radius:22px;
- background:#151d33;border:1px solid #35405c
+ width:min(390px,100%);
+ padding:28px 20px;
+ text-align:center;
+ border-radius:22px;
+ background:#151d33;
+ border:1px solid #35405c;
 }
-.bigCode{font-size:42px;font-weight:900;letter-spacing:9px;color:#9eb0ff;margin:17px 0}
-.modal button{padding:11px 17px;border:0;border-radius:10px;background:#6079f4;color:#fff}
+
+.bigCode{
+ margin:17px 0;
+ font-size:40px;
+ font-weight:900;
+ letter-spacing:8px;
+ color:#9eb0ff;
+}
+
+.modal button{
+ min-height:42px;
+ padding:0 15px;
+ border:0;
+ border-radius:10px;
+ background:#6079f4;
+ color:white;
+}
+
+/* ================= MOBILE ================= */
 
 @media(max-width:750px){
- #app{grid-template-columns:1fr}
- .sidebar{display:none}
- .gameGrid{grid-template-columns:repeat(2,1fr)}
- .gameBody{padding:15px}
- .gameBoard{min-height:330px}
- .reactionBoard{height:330px}
- .msgContent{max-width:82%}
+
+ #app{
+  display:block;
+ }
+
+ .sidebar{
+  display:none;
+ }
+
+ .header{
+  height:56px;
+  padding:0 13px;
+ }
+
+ .messages{
+  padding:13px;
+ }
+
+ .msgContent{
+  max-width:84%;
+ }
+
+ .chatInputArea{
+  padding:8px 9px;
+  padding-bottom:max(8px,env(safe-area-inset-bottom));
+ }
+
+ .chatInput{
+  height:45px;
+ }
+
+ .send{
+  width:58px;
+ }
+
+ .gameHeader{
+  height:56px;
+  padding:0 10px;
+ }
+
+ .gameBody{
+  padding:12px;
+ }
+
+ .gameGrid{
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+ }
+
+ .gameCard{
+  min-height:115px;
+  padding:13px;
+ }
+
+ .gameIcon{
+  font-size:27px;
+ }
+
+ .gameBoard{
+  height:calc(100dvh - 190px);
+  min-height:300px;
+  max-height:520px;
+ }
+
+ .reactionBoard{
+  font-size:25px;
+ }
+
+ .target{
+  width:75px;
+  height:75px;
+ }
+
+ .numberBox{
+  font-size:42px;
+  letter-spacing:5px;
+ }
+
+ .colorChoice{
+  width:45%;
+  max-width:145px;
+ }
+
+ .sequenceGrid{
+  grid-template-columns:repeat(3,80px);
+  gap:8px;
+ }
+
+ .seqBtn{
+  height:65px;
+ }
+
 }
 
 @media(max-width:430px){
- .gameGrid{grid-template-columns:1fr}
- .gameCard{min-height:105px}
- .numberBox{font-size:40px}
+
+ .card{
+  padding:22px 18px;
+ }
+
+ .logo{
+  font-size:30px;
+ }
+
+ .gameGrid{
+  grid-template-columns:1fr 1fr;
+ }
+
+ .gameCard{
+  min-height:105px;
+  padding:11px;
+ }
+
+ .gameCard b{
+  font-size:14px;
+ }
+
+ .gameCard span{
+  font-size:10px;
+ }
+
+ .gameIcon{
+  font-size:25px;
+ }
+
+ .playArea h2{
+  font-size:23px;
+ }
+
+ .sequenceGrid{
+  grid-template-columns:repeat(3,1fr);
+  max-width:280px;
+  margin:18px auto;
+ }
+
+ .seqBtn{
+  width:100%;
+  height:62px;
+ }
+
+}
+
+/* 가로 모바일 */
+
+@media(max-height:500px) and (orientation:landscape){
+
+ .gameHeader{
+  height:48px;
+ }
+
+ .gameBody{
+  padding:8px;
+ }
+
+ .gameBoard{
+  height:calc(100dvh - 110px);
+  min-height:250px;
+ }
+
+ .gameIntro{
+  margin-bottom:8px;
+ }
+
+ .gameIntro h1{
+  font-size:22px;
+ }
+
+ .gameCard{
+  min-height:90px;
+ }
+
 }
 </style>
 </head>
 
 <body>
 
-<!-- START -->
+<!-- ================= START ================= -->
 
 <div id="start">
+
  <div class="card">
 
   <div class="logo">ROOM CHAT</div>
-  <div class="sub">친구들과 채팅하고 미니게임을 즐겨보세요</div>
+
+  <div class="sub">
+   친구들과 채팅하고 미니게임을 즐겨보세요
+  </div>
 
   <label>닉네임</label>
-  <input id="name" class="input" maxlength="20" placeholder="닉네임">
 
-  <button id="create" class="primary">새 방 만들기</button>
+  <input
+   id="name"
+   class="input"
+   maxlength="20"
+   autocomplete="nickname"
+   placeholder="닉네임"
+  >
+
+  <button id="create" class="primary">
+   새 방 만들기
+  </button>
 
   <div class="divider">또는</div>
 
   <label>6자리 방 코드</label>
-  <input id="joinCode" class="input codeInput" maxlength="6"
-         inputmode="numeric" placeholder="000000">
 
-  <button id="join" class="primary">방 들어가기</button>
+  <input
+   id="joinCode"
+   class="input codeInput"
+   maxlength="6"
+   inputmode="numeric"
+   autocomplete="off"
+   placeholder="000000"
+  >
+
+  <button id="join" class="primary">
+   방 들어가기
+  </button>
 
   <div id="error"></div>
 
  </div>
+
 </div>
 
 
-<!-- APP -->
+<!-- ================= APP ================= -->
 
 <div id="app" class="hidden">
 
  <aside class="sidebar">
 
   <div class="roomInfo">
-   <div id="roomName" class="roomName">채팅방</div>
-   <div id="roomCode" class="code">000000</div>
-   <button id="copyCode" class="copy">방 코드 복사</button>
+
+   <div id="roomName" class="roomName">
+    채팅방
+   </div>
+
+   <div id="roomCode" class="code">
+    000000
+   </div>
+
+   <button id="copyCode" class="copy">
+    방 코드 복사
+   </button>
+
   </div>
 
-  <div class="peopleTitle">접속자</div>
+  <div class="peopleTitle">
+   접속자
+  </div>
 
   <div id="users" class="users"></div>
 
   <div class="sideButtons">
-   <button id="miniButton" class="sideButton">🎮 미니게임</button>
-   <button id="leave" class="sideButton leave">방 나가기</button>
+
+   <button id="miniButton" class="sideButton">
+    🎮 미니게임
+   </button>
+
+   <button id="leave" class="sideButton leave">
+    방 나가기
+   </button>
+
   </div>
 
  </aside>
 
+
  <main class="main">
 
   <header class="header">
-   <div id="headerName" class="headerTitle">채팅방</div>
-   <div class="status"><span class="dot"></span>실시간</div>
+
+   <div id="headerName" class="headerTitle">
+    채팅방
+   </div>
+
+   <div class="status">
+    <span class="dot"></span>
+    실시간
+   </div>
+
   </header>
+
 
   <div id="messages" class="messages"></div>
 
+
   <div class="chatInputArea">
+
    <form id="chatForm" class="form">
-    <input id="chatInput" class="chatInput"
-           maxlength="500" autocomplete="off"
-           placeholder="메시지를 입력하세요...">
-    <button class="send">전송</button>
+
+    <input
+     id="chatInput"
+     class="chatInput"
+     maxlength="500"
+     autocomplete="off"
+     placeholder="메시지를 입력하세요..."
+    >
+
+    <button class="send">
+     전송
+    </button>
+
    </form>
+
   </div>
 
  </main>
+
 </div>
 
 
-<!-- CODE MODAL -->
+<!-- ================= ROOM CODE ================= -->
 
 <div id="codeModal" class="hidden">
+
  <div class="modal">
-  <div>친구에게 이 방 코드를 알려주세요</div>
-  <div id="bigCode" class="bigCode">000000</div>
-  <button id="modalCopy">코드 복사</button>
-  <button id="modalClose" style="background:#29334e;margin-left:5px">
+
+  <div>
+   친구에게 이 방 코드를 알려주세요
+  </div>
+
+  <div id="bigCode" class="bigCode">
+   000000
+  </div>
+
+  <button id="modalCopy">
+   코드 복사
+  </button>
+
+  <button
+   id="modalClose"
+   style="background:#29334e;margin-left:5px"
+  >
    입장하기
   </button>
+
  </div>
+
 </div>
 
 
-<!-- GAME -->
+<!-- ================= GAME ================= -->
 
 <div id="gamePanel" class="hidden">
 
  <header class="gameHeader">
-  <div class="gameTitle">🎮 미니게임</div>
-  <button id="closeGame" class="closeGame">채팅으로</button>
+
+  <div class="gameTitle">
+   🎮 미니게임
+  </div>
+
+  <button id="closeGame" class="closeGame">
+   채팅으로
+  </button>
+
  </header>
 
  <div id="gameBody" class="gameBody"></div>
@@ -332,36 +1118,46 @@ label{display:block;color:#aab5cf;font-size:13px;margin:14px 0 7px}
 
 
 <script>
-/* =========================================
-   BASIC STATE
-========================================= */
 
-let peer = null;
-let myId = "";
-let myName = "";
-let roomCode = "";
-let roomTitle = "";
-let host = false;
+/* =====================================================
+   STATE
+===================================================== */
 
-let connections = new Map();
+let peer=null;
+let myId="";
+let myName="";
+let roomCode="";
+let roomTitle="";
+let host=false;
 
-let game = {
+let connections=new Map();
+
+let selectedMode="solo";
+
+let game={
  type:null,
  mode:"solo",
  running:false,
  round:0,
- state:null,
+ state:{},
  scores:{},
  results:[]
 };
 
-const $ = id => document.getElementById(id);
+let localSequence=[];
+
+const $=id=>document.getElementById(id);
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
 
 function clean(v,max){
- return String(v || "")
-   .replace(/[<>]/g,"")
-   .trim()
-   .slice(0,max);
+ return String(v||"")
+  .replace(/[<>]/g,"")
+  .trim()
+  .slice(0,max);
 }
 
 function error(t){
@@ -369,24 +1165,28 @@ function error(t){
 }
 
 function toast(t){
- const old=$("toast");
- if(old) old.remove();
+
+ const old=document.getElementById("toast");
+
+ if(old)old.remove();
 
  const x=document.createElement("div");
+
  x.id="toast";
  x.textContent=t;
 
  Object.assign(x.style,{
   position:"fixed",
   left:"50%",
-  bottom:"80px",
+  bottom:"75px",
   transform:"translateX(-50%)",
   padding:"11px 17px",
+  borderRadius:"11px",
   background:"#202a43",
   border:"1px solid #3b4765",
-  borderRadius:"10px",
-  zIndex:999,
-  color:"#fff"
+  zIndex:9999,
+  color:"#fff",
+  fontSize:"13px"
  });
 
  document.body.appendChild(x);
@@ -394,21 +1194,46 @@ function toast(t){
  setTimeout(()=>x.remove(),1800);
 }
 
-function time(t){
- return new Date(t).toLocaleTimeString("ko-KR",{
-  hour:"2-digit",
-  minute:"2-digit"
- });
+function escapeHTML(s){
+
+ return String(s||"")
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
 }
 
+function time(t){
+
+ return new Date(t).toLocaleTimeString(
+  "ko-KR",
+  {
+   hour:"2-digit",
+   minute:"2-digit"
+  }
+ );
+}
+
+
+/* =====================================================
+   CHAT
+===================================================== */
+
 function system(t){
+
  const d=document.createElement("div");
  d.className="system";
+
  const s=document.createElement("span");
  s.textContent=t;
+
  d.appendChild(s);
+
  $("messages").appendChild(d);
- $("messages").scrollTop=$("messages").scrollHeight;
+
+ $("messages").scrollTop=
+  $("messages").scrollHeight;
 }
 
 function message(data){
@@ -416,7 +1241,9 @@ function message(data){
  const mine=data.senderId===myId;
 
  const d=document.createElement("div");
- d.className="message"+(mine?" mine":"");
+
+ d.className=
+  "message"+(mine?" mine":"");
 
  const c=document.createElement("div");
  c.className="msgContent";
@@ -440,16 +1267,19 @@ function message(data){
 
  c.appendChild(top);
  c.appendChild(b);
+
  d.appendChild(c);
 
  $("messages").appendChild(d);
- $("messages").scrollTop=$("messages").scrollHeight;
+
+ $("messages").scrollTop=
+  $("messages").scrollHeight;
 }
 
 
-/* =========================================
+/* =====================================================
    USERS
-========================================= */
+===================================================== */
 
 function allUsers(){
 
@@ -461,10 +1291,15 @@ function allUsers(){
   }
  ];
 
- connections.forEach(c=>{
-  if(c.user && !arr.some(x=>x.id===c.user.id)){
-   arr.push(c.user);
+ connections.forEach(x=>{
+
+  if(
+   x.user &&
+   !arr.some(u=>u.id===x.user.id)
+  ){
+   arr.push(x.user);
   }
+
  });
 
  return arr.slice(0,5);
@@ -473,6 +1308,7 @@ function allUsers(){
 function drawUsers(){
 
  const box=$("users");
+
  box.innerHTML="";
 
  allUsers().forEach(u=>{
@@ -482,16 +1318,20 @@ function drawUsers(){
 
   const a=document.createElement("div");
   a.className="avatar";
-  a.textContent=u.name.charAt(0).toUpperCase();
+  a.textContent=
+   u.name.charAt(0).toUpperCase();
 
   const n=document.createElement("div");
   n.className="uname";
   n.textContent=u.name;
 
   if(u.host){
+
    const h=document.createElement("span");
+
    h.className="host";
    h.textContent="방장";
+
    n.appendChild(h);
   }
 
@@ -503,18 +1343,21 @@ function drawUsers(){
 }
 
 
-/* =========================================
-   PEER CONNECTION
-========================================= */
+/* =====================================================
+   NETWORK
+===================================================== */
 
 function connect(conn){
 
  const item={
-  conn,
+  conn:conn,
   user:null
  };
 
- connections.set(conn.peer,item);
+ connections.set(
+  conn.peer,
+  item
+ );
 
  conn.on("open",()=>{
 
@@ -523,7 +1366,7 @@ function connect(conn){
    user:{
     id:myId,
     name:myName,
-    host
+    host:host
    }
   });
 
@@ -539,9 +1382,12 @@ function connect(conn){
  conn.on("close",()=>{
 
   const old=connections.get(conn.peer);
-  const name=old?.user?.name;
+
+  const name=
+   old?.user?.name;
 
   connections.delete(conn.peer);
+
   drawUsers();
 
   if(name){
@@ -569,6 +1415,7 @@ function broadcast(data,except=null){
     x.conn.send(data);
    }catch(e){}
   }
+
  });
 }
 
@@ -585,6 +1432,7 @@ function sendFullState(conn){
    type:"gameState",
    game:game
   });
+
  }
 }
 
@@ -592,9 +1440,11 @@ function receive(conn,data){
 
  if(!data)return;
 
+
  if(data.type==="hello"){
 
-  const item=connections.get(conn.peer);
+  const item=
+   connections.get(conn.peer);
 
   if(item){
    item.user=data.user;
@@ -616,10 +1466,11 @@ function receive(conn,data){
 
    if(u.id===myId)return;
 
-   const existing=connections.get(u.id);
+   const x=
+    connections.get(u.id);
 
-   if(existing){
-    existing.user=u;
+   if(x){
+    x.user=u;
    }
 
   });
@@ -679,34 +1530,36 @@ function receive(conn,data){
   return;
  }
 
-
- if(data.type==="playerCount"){
-
-  drawUsers();
-
- }
 }
 
 
-/* =========================================
-   START / JOIN
-========================================= */
+/* =====================================================
+   CREATE ROOM
+===================================================== */
 
 $("create").onclick=()=>{
 
- const name=clean($("name").value,20);
+ const name=
+  clean($("name").value,20);
 
  if(!name){
+
   error("닉네임을 입력해주세요.");
+
   return;
  }
 
  myName=name;
+
  roomCode=String(
-  Math.floor(100000+Math.random()*900000)
+  Math.floor(
+   100000+
+   Math.random()*900000
+  )
  );
 
  roomTitle="친구 채팅방";
+
  host=true;
 
  peer=new Peer(
@@ -718,27 +1571,43 @@ $("create").onclick=()=>{
 
   myId=id;
 
-  $("start").classList.add("hidden");
-  $("app").classList.remove("hidden");
+  $("start")
+   .classList.add("hidden");
 
-  $("roomName").textContent=roomTitle;
-  $("headerName").textContent=roomTitle;
-  $("roomCode").textContent=roomCode;
-  $("bigCode").textContent=roomCode;
+  $("app")
+   .classList.remove("hidden");
+
+  $("roomName").textContent=
+   roomTitle;
+
+  $("headerName").textContent=
+   roomTitle;
+
+  $("roomCode").textContent=
+   roomCode;
+
+  $("bigCode").textContent=
+   roomCode;
 
   drawUsers();
 
-  $("codeModal").classList.remove("hidden");
+  $("codeModal")
+   .classList.remove("hidden");
 
   system(
-   "방이 만들어졌습니다. 친구에게 "+roomCode+"을 알려주세요."
+   "방이 만들어졌습니다. 친구에게 "+
+   roomCode+
+   "을 알려주세요."
   );
+
  });
 
  peer.on("connection",conn=>{
 
   if(allUsers().length>=5){
+
    conn.on("open",()=>{
+
     conn.send({
      type:"chat",
      name:"SYSTEM",
@@ -746,33 +1615,55 @@ $("create").onclick=()=>{
      time:Date.now(),
      senderId:"system"
     });
+
     conn.close();
    });
+
    return;
   }
 
   connect(conn);
+
  });
 
  peer.on("error",e=>{
-  error("방을 만들지 못했습니다. 다시 시도해주세요.");
+
   console.error(e);
+
+  error(
+   "방을 만들지 못했습니다. 다시 시도해주세요."
+  );
+
  });
+
 };
 
 
+/* =====================================================
+   JOIN ROOM
+===================================================== */
+
 $("join").onclick=()=>{
 
- const name=clean($("name").value,20);
- const code=$("joinCode").value.replace(/\D/g,"").slice(0,6);
+ const name=
+  clean($("name").value,20);
+
+ const code=
+  $("joinCode").value
+   .replace(/\D/g,"")
+   .slice(0,6);
 
  if(!name){
+
   error("닉네임을 입력해주세요.");
+
   return;
  }
 
  if(code.length!==6){
+
   error("6자리 방 코드를 입력해주세요.");
+
   return;
  }
 
@@ -786,25 +1677,36 @@ $("join").onclick=()=>{
 
   myId=id;
 
-  const conn=peer.connect(
-   "roomchat-"+roomCode,
-   {reliable:true}
-  );
+  const conn=
+   peer.connect(
+    "roomchat-"+roomCode,
+    {reliable:true}
+   );
 
   connect(conn);
 
   conn.on("open",()=>{
 
-   $("start").classList.add("hidden");
-   $("app").classList.remove("hidden");
+   $("start")
+    .classList.add("hidden");
 
-   $("roomName").textContent="채팅방";
-   $("headerName").textContent="채팅방";
-   $("roomCode").textContent=roomCode;
+   $("app")
+    .classList.remove("hidden");
+
+   $("roomName").textContent=
+    "채팅방";
+
+   $("headerName").textContent=
+    "채팅방";
+
+   $("roomCode").textContent=
+    roomCode;
 
    drawUsers();
 
-   system("방에 연결되었습니다.");
+   system(
+    "방에 연결되었습니다."
+   );
 
   });
 
@@ -815,29 +1717,48 @@ $("join").onclick=()=>{
   console.error(e);
 
   if(e.type==="peer-unavailable"){
-   error("존재하지 않는 방입니다.");
+
+   error(
+    "존재하지 않는 방입니다."
+   );
+
   }else{
-   error("방에 연결하지 못했습니다.");
+
+   error(
+    "방에 연결하지 못했습니다."
+   );
+
   }
+
  });
+
 };
 
+
+/* =====================================================
+   INPUT
+===================================================== */
 
 $("joinCode").oninput=()=>{
+
  $("joinCode").value=
-  $("joinCode").value.replace(/\D/g,"").slice(0,6);
+  $("joinCode").value
+   .replace(/\D/g,"")
+   .slice(0,6);
+
 };
 
 
-/* =========================================
-   CHAT
-========================================= */
+/* =====================================================
+   CHAT SEND
+===================================================== */
 
 $("chatForm").onsubmit=e=>{
 
  e.preventDefault();
 
- const text=clean($("chatInput").value,500);
+ const text=
+  clean($("chatInput").value,500);
 
  if(!text)return;
 
@@ -845,54 +1766,81 @@ $("chatForm").onsubmit=e=>{
   type:"chat",
   senderId:myId,
   name:myName,
-  text,
+  text:text,
   time:Date.now()
  };
 
  message(data);
 
  if(host){
-  broadcast(data);
- }else{
-  const first=connections.values().next().value;
 
-  if(first?.conn?.open){
+  broadcast(data);
+
+ }else{
+
+  const first=
+   [...connections.values()]
+    .find(x=>x.conn?.open);
+
+  if(first){
    first.conn.send(data);
   }
+
  }
 
  $("chatInput").value="";
 };
 
 
-$("copyCode").onclick=copyCode;
-$("modalCopy").onclick=copyCode;
+/* =====================================================
+   COPY
+===================================================== */
 
 async function copyCode(){
 
  try{
-  await navigator.clipboard.writeText(roomCode);
+
+  await navigator.clipboard
+   .writeText(roomCode);
+
   toast("방 코드가 복사되었습니다.");
+
  }catch{
-  prompt("방 코드:",roomCode);
+
+  prompt(
+   "방 코드:",
+   roomCode
+  );
+
  }
+
 }
 
+$("copyCode").onclick=copyCode;
+$("modalCopy").onclick=copyCode;
+
 $("modalClose").onclick=()=>{
- $("codeModal").classList.add("hidden");
+ $("codeModal")
+  .classList.add("hidden");
 };
 
 
-/* =========================================
+/* =====================================================
    LEAVE
-========================================= */
+===================================================== */
 
 $("leave").onclick=()=>{
 
- if(confirm("방에서 나갈까요?")){
+ if(
+  confirm("방에서 나갈까요?")
+ ){
 
   connections.forEach(x=>{
-   try{x.conn.close()}catch(e){}
+
+   try{
+    x.conn.close();
+   }catch(e){}
+
   });
 
   if(peer){
@@ -901,12 +1849,13 @@ $("leave").onclick=()=>{
 
   location.reload();
  }
+
 };
 
 
-/* =========================================
-   GAME MENU
-========================================= */
+/* =====================================================
+   GAME OPEN
+===================================================== */
 
 $("miniButton").onclick=()=>{
  openGame();
@@ -914,12 +1863,21 @@ $("miniButton").onclick=()=>{
 };
 
 $("closeGame").onclick=()=>{
- $("gamePanel").classList.add("hidden");
+ $("gamePanel")
+  .classList.add("hidden");
 };
 
 function openGame(){
- $("gamePanel").classList.remove("hidden");
+
+ $("gamePanel")
+  .classList.remove("hidden");
+
 }
+
+
+/* =====================================================
+   GAME MENU
+===================================================== */
 
 function showMenu(){
 
@@ -928,75 +1886,113 @@ function showMenu(){
  <div class="gameMenu">
 
   <div class="gameIntro">
+
    <h1>🎮 미니게임</h1>
-   <p>최대 5명이 함께 플레이할 수 있습니다.</p>
+
+   <p>
+    최대 5명이 함께 플레이할 수 있습니다.
+   </p>
+
   </div>
 
   <div class="gameGrid">
 
-   <button class="gameCard" onclick="selectGame('reaction')">
+   <button
+    class="gameCard"
+    onclick="selectGame('reaction')"
+   >
     <div class="gameIcon">⚡</div>
     <b>순간 반응</b>
     <span>초록색이 되는 순간 누르기</span>
    </button>
 
-   <button class="gameCard" onclick="selectGame('target')">
+   <button
+    class="gameCard"
+    onclick="selectGame('target')"
+   >
     <div class="gameIcon">🎯</div>
     <b>타겟 클릭</b>
     <span>20초 동안 타겟 많이 누르기</span>
    </button>
 
-   <button class="gameCard" onclick="selectGame('memory')">
+   <button
+    class="gameCard"
+    onclick="selectGame('memory')"
+   >
     <div class="gameIcon">🧠</div>
     <b>숫자 기억</b>
     <span>잠깐 나타난 숫자 기억하기</span>
    </button>
 
-   <button class="gameCard" onclick="selectGame('math')">
+   <button
+    class="gameCard"
+    onclick="selectGame('math')"
+   >
     <div class="gameIcon">🔢</div>
     <b>빠른 계산</b>
     <span>계산 문제를 빠르게 풀기</span>
    </button>
 
-   <button class="gameCard" onclick="selectGame('color')">
+   <button
+    class="gameCard"
+    onclick="selectGame('color')"
+   >
     <div class="gameIcon">🟢</div>
     <b>색깔 맞히기</b>
-    <span>표시된 색을 선택하기</span>
+    <span>정답 색을 빠르게 선택</span>
    </button>
 
-   <button class="gameCard" onclick="selectGame('sequence')">
+   <button
+    class="gameCard"
+    onclick="selectGame('sequence')"
+   >
     <div class="gameIcon">🧩</div>
     <b>순서 기억</b>
-    <span>버튼이 나온 순서대로 누르기</span>
+    <span>버튼 순서를 기억하기</span>
    </button>
 
   </div>
 
   <div class="modeBox">
-   <b>게임 방식</b><br>
-   <button class="modeBtn selected" onclick="setMode('solo',this)">
+
+   <b>게임 방식</b>
+
+   <br>
+
+   <button
+    class="modeBtn selected"
+    onclick="setMode('solo',this)"
+   >
     개인전
    </button>
-   <button class="modeBtn" onclick="setMode('team',this)">
+
+   <button
+    class="modeBtn"
+    onclick="setMode('team',this)"
+   >
     2팀전
    </button>
+
   </div>
 
  </div>
+
  `;
 
  game.type=null;
  game.mode="solo";
+ selectedMode="solo";
 }
-
-let selectedMode="solo";
 
 function setMode(mode,button){
 
  selectedMode=mode;
 
- document.querySelectorAll(".modeBtn")
-  .forEach(x=>x.classList.remove("selected"));
+ document
+  .querySelectorAll(".modeBtn")
+  .forEach(x=>
+   x.classList.remove("selected")
+  );
 
  button.classList.add("selected");
 }
@@ -1010,24 +2006,47 @@ function selectGame(type){
  <div class="gameMenu">
 
   <div class="gameIntro">
+
    <h1>${gameName(type)}</h1>
+
    <p>${gameDescription(type)}</p>
+
   </div>
 
   <div class="modeBox">
+
    현재 방식:
-   <b>${selectedMode==="solo"?"개인전":"2팀전"}</b>
+   <b>
+    ${
+     selectedMode==="solo"
+      ?"개인전"
+      :"2팀전"
+    }
+   </b>
+
   </div>
 
-  <button class="startGame" onclick="startGame()">
-   ${host?"게임 시작":"방장이 시작하기를 기다리는 중"}
+  <button
+   class="startGame"
+   onclick="startGame()"
+  >
+   ${
+    host
+     ?"게임 시작"
+     :"방장이 시작하기를 기다리는 중"
+   }
   </button>
 
   <div class="wait">
-   ${host?"방장만 게임을 시작할 수 있습니다.":"방장에게 게임 시작을 요청하세요."}
+   ${
+    host
+     ?"방장만 게임을 시작할 수 있습니다."
+     :"방장이 게임을 시작하면 자동으로 시작됩니다."
+   }
   </div>
 
  </div>
+
  `;
 }
 
@@ -1041,24 +2060,56 @@ function gameName(t){
   color:"🟢 색깔 맞히기",
   sequence:"🧩 순서 기억"
  }[t];
+
 }
 
 function gameDescription(t){
 
  return {
-  reaction:"화면이 빨간색에서 초록색으로 바뀌는 순간 클릭하세요.",
-  target:"20초 동안 나타나는 타겟을 최대한 많이 클릭하세요.",
+  reaction:"빨간색에서 초록색으로 바뀌는 순간 화면을 터치하세요.",
+  target:"20초 동안 나타나는 타겟을 최대한 많이 터치하세요.",
   memory:"잠깐 보여주는 숫자를 기억하고 입력하세요.",
   math:"계산 문제를 보고 정답을 입력하세요.",
-  color:"문제에 나온 색과 같은 색 버튼을 누르세요.",
-  sequence:"불이 들어온 버튼들의 순서를 기억하세요."
+  color:"문제의 색과 같은 버튼을 선택하세요.",
+  sequence:"나타난 버튼 순서를 기억하세요."
  }[t];
+
 }
 
 
-/* =========================================
-   GAME NETWORK
-========================================= */
+/* =====================================================
+   GAME COMMAND
+===================================================== */
+
+function gameCommand(command,payload){
+
+ if(host){
+
+  processGameCommand(
+   command,
+   payload,
+   myId
+  );
+
+ }else{
+
+  const first=
+   [...connections.values()]
+    .find(x=>x.conn?.open);
+
+  if(first){
+
+   first.conn.send({
+    type:"gameCommand",
+    command:command,
+    payload:payload
+   });
+
+  }
+
+ }
+
+}
 
 function gameBroadcast(){
 
@@ -1068,36 +2119,26 @@ function gameBroadcast(){
   type:"gameState",
   game:game
  });
+
 }
 
-function gameCommand(command,payload){
 
- if(host){
-  processGameCommand(command,payload,myId);
- }else{
-
-  const first=
-   [...connections.values()]
-    .find(x=>x.conn?.open);
-
-  if(first){
-   first.conn.send({
-    type:"gameCommand",
-    command,
-    payload
-   });
-  }
- }
-}
+/* =====================================================
+   START GAME
+===================================================== */
 
 function startGame(){
 
  if(!host){
-  toast("방장만 시작할 수 있습니다.");
+
+  toast(
+   "방장만 게임을 시작할 수 있습니다."
+  );
+
   return;
  }
 
- if(allUsers().length<1)return;
+ const users=allUsers();
 
  game={
   type:game.type,
@@ -1110,12 +2151,14 @@ function startGame(){
   startedAt:Date.now()
  };
 
- allUsers().forEach(u=>{
+ users.forEach(u=>{
+
   game.scores[u.id]={
    name:u.name,
    score:0,
    times:[]
   };
+
  });
 
  broadcast({
@@ -1129,11 +2172,15 @@ function startGame(){
 }
 
 
-/* =========================================
-   GAME PROCESSING
-========================================= */
+/* =====================================================
+   PROCESS
+===================================================== */
 
-function processGameCommand(command,payload,sender){
+function processGameCommand(
+ command,
+ payload,
+ sender
+){
 
  if(!host)return;
 
@@ -1160,56 +2207,57 @@ function processGameCommand(command,payload,sender){
  if(command==="sequenceAnswer"){
   sequenceAnswer(sender,payload);
  }
+
 }
 
 
-/* =========================================
-   GAME ROUNDS
-========================================= */
+/* =====================================================
+   ROUND
+===================================================== */
 
 function beginRound(){
 
  if(!game.running)return;
 
- if(game.type==="reaction"){
+ localSequence=[];
+
+ if(game.type==="reaction")
   beginReaction();
- }
 
- if(game.type==="target"){
+ if(game.type==="target")
   beginTarget();
- }
 
- if(game.type==="memory"){
+ if(game.type==="memory")
   beginMemory();
- }
 
- if(game.type==="math"){
+ if(game.type==="math")
   beginMath();
- }
 
- if(game.type==="color"){
+ if(game.type==="color")
   beginColor();
- }
 
- if(game.type==="sequence"){
+ if(game.type==="sequence")
   beginSequence();
-}
 
  gameBroadcast();
  renderGameState();
 }
 
 
-/* =========================================
+/* =====================================================
    REACTION
-========================================= */
+===================================================== */
 
 function beginReaction(){
 
+ const greenAt=
+  Date.now()+
+  1800+
+  Math.random()*3500;
+
  game.state={
   phase:"red",
-  started:Date.now(),
-  greenAt:Date.now()+1000+Math.random()*3500,
+  greenAt:greenAt,
   clicks:{}
  };
 
@@ -1220,7 +2268,6 @@ function beginReaction(){
 
   if(
    game.running &&
-   game.round===game.round &&
    game.state.phase==="red"
   ){
 
@@ -1232,21 +2279,29 @@ function beginReaction(){
 
   }
 
- },game.state.greenAt-Date.now());
+ },greenAt-Date.now());
+
 }
 
 function reactionClick(id){
 
+ if(!game.scores[id])return;
+
  if(game.state.phase==="red"){
 
-  game.state.phase="false";
+  if(game.state.clicks[id])return;
 
-  game.scores[id].times.push(9999);
+  game.state.clicks[id]=9999;
+
+  game.scores[id]
+   .times.push(9999);
+
+  game.state.phase="false";
 
   gameBroadcast();
   renderGameState();
 
-  setTimeout(nextRound,1300);
+  setTimeout(nextRound,1200);
 
   return;
  }
@@ -1255,11 +2310,15 @@ function reactionClick(id){
 
  if(game.state.clicks[id])return;
 
- const ms=Date.now()-game.state.greenAt;
+ const ms=
+  Date.now()-
+  game.state.greenAt;
 
  game.state.clicks[id]=ms;
 
- game.scores[id].times.push(ms);
+ game.scores[id]
+  .times.push(ms);
+
  game.scores[id].score++;
 
  if(
@@ -1267,30 +2326,32 @@ function reactionClick(id){
   allUsers().length
  ){
 
-  setTimeout(nextRound,1000);
+  setTimeout(nextRound,900);
 
  }else{
 
   gameBroadcast();
   renderGameState();
+
  }
+
 }
 
 
-/* =========================================
+/* =====================================================
    TARGET
-========================================= */
+===================================================== */
 
 function beginTarget(){
 
  game.state={
   time:20,
   target:{
-   x:20+Math.random()*70,
-   y:20+Math.random()*65
+   x:15+Math.random()*70,
+   y:15+Math.random()*65
   },
-  clicks:{},
-  endsAt:Date.now()+20000
+  endsAt:Date.now()+20000,
+  clicks:{}
  };
 
  gameBroadcast();
@@ -1298,42 +2359,58 @@ function beginTarget(){
 
  clearInterval(window.targetTimer);
 
- window.targetTimer=setInterval(()=>{
+ window.targetTimer=
+  setInterval(()=>{
 
-  if(!game.running)return;
+   if(!game.running){
 
-  game.state.time=
-   Math.max(
-    0,
-    Math.ceil(
-     (game.state.endsAt-Date.now())/1000
-    )
-   );
+    clearInterval(
+     window.targetTimer
+    );
 
-  if(game.state.time<=0){
+    return;
+   }
 
-   clearInterval(window.targetTimer);
-   nextRound();
+   game.state.time=
+    Math.max(
+     0,
+     Math.ceil(
+      (game.state.endsAt-Date.now())/
+      1000
+     )
+    );
 
-  }else{
+   if(game.state.time<=0){
 
-   gameBroadcast();
-   renderGameState();
+    clearInterval(
+     window.targetTimer
+    );
 
-  }
+    nextRound();
 
- },300);
+   }else{
+
+    gameBroadcast();
+    renderGameState();
+
+   }
+
+  },300);
+
 }
 
 function targetClick(id){
 
- if(Date.now()>game.state.endsAt)return;
+ if(
+  !game.state ||
+  Date.now()>game.state.endsAt
+ )return;
 
  game.scores[id].score++;
 
  game.state.target={
-  x:5+Math.random()*85,
-  y:5+Math.random()*80
+  x:8+Math.random()*84,
+  y:8+Math.random()*82
  };
 
  gameBroadcast();
@@ -1341,21 +2418,22 @@ function targetClick(id){
 }
 
 
-/* =========================================
+/* =====================================================
    MEMORY
-========================================= */
+===================================================== */
 
 function beginMemory(){
 
  const number=
   String(
    Math.floor(
-    10000+Math.random()*90000
+    10000+
+    Math.random()*90000
    )
   );
 
  game.state={
-  number,
+  number:number,
   visible:true,
   answered:{},
   started:Date.now()
@@ -1374,19 +2452,30 @@ function beginMemory(){
   renderGameState();
 
  },2500);
+
 }
 
 function memoryAnswer(id,payload){
 
- if(game.state.answered[id])return;
+ if(
+  game.state.answered[id]
+ )return;
 
  game.state.answered[id]=true;
 
- if(String(payload)===game.state.number){
-  game.scores[id].score+=1;
-  game.scores[id].times.push(
-   Date.now()-game.state.started
-  );
+ if(
+  String(payload)===
+  game.state.number
+ ){
+
+  game.scores[id].score++;
+
+  game.scores[id]
+   .times.push(
+    Date.now()-
+    game.state.started
+   );
+
  }
 
  gameBroadcast();
@@ -1397,51 +2486,76 @@ function memoryAnswer(id,payload){
   allUsers().length
  ){
 
-  setTimeout(nextRound,1000);
+  setTimeout(nextRound,900);
+
  }
+
 }
 
 
-/* =========================================
+/* =====================================================
    MATH
-========================================= */
+===================================================== */
 
 function beginMath(){
 
- const a=5+Math.floor(Math.random()*25);
- const b=2+Math.floor(Math.random()*20);
+ const a=
+  5+
+  Math.floor(
+   Math.random()*25
+  );
+
+ const b=
+  2+
+  Math.floor(
+   Math.random()*20
+  );
 
  let op="+";
  let answer=a+b;
 
  if(Math.random()<.5){
+
   op="-";
   answer=a-b;
+
  }
 
  game.state={
-  a,b,op,answer,
+  a:a,
+  b:b,
+  op:op,
+  answer:answer,
   answered:{},
   started:Date.now()
  };
 
  gameBroadcast();
  renderGameState();
+
 }
 
 function mathAnswer(id,payload){
 
- if(game.state.answered[id])return;
+ if(
+  game.state.answered[id]
+ )return;
 
  game.state.answered[id]=true;
 
- if(Number(payload)===game.state.answer){
+ if(
+  Number(payload)===
+  game.state.answer
+ ){
 
   game.scores[id].score++;
 
-  game.scores[id].times.push(
-   Date.now()-game.state.started
-  );
+  game.scores[id]
+   .times.push(
+    Date.now()-
+    game.state.started
+   );
+
  }
 
  gameBroadcast();
@@ -1452,14 +2566,16 @@ function mathAnswer(id,payload){
   allUsers().length
  ){
 
-  setTimeout(nextRound,1000);
+  setTimeout(nextRound,900);
+
  }
+
 }
 
 
-/* =========================================
+/* =====================================================
    COLOR
-========================================= */
+===================================================== */
 
 const colors=[
  {
@@ -1483,24 +2599,32 @@ const colors=[
 function beginColor(){
 
  const correct=
-  Math.floor(Math.random()*colors.length);
+  Math.floor(
+   Math.random()*colors.length
+  );
 
  game.state={
-  correct,
+  correct:correct,
   answered:{}
  };
 
  gameBroadcast();
  renderGameState();
+
 }
 
 function colorAnswer(id,payload){
 
- if(game.state.answered[id])return;
+ if(
+  game.state.answered[id]
+ )return;
 
  game.state.answered[id]=true;
 
- if(Number(payload)===game.state.correct){
+ if(
+  Number(payload)===
+  game.state.correct
+ ){
 
   game.scores[id].score++;
 
@@ -1515,67 +2639,82 @@ function colorAnswer(id,payload){
  ){
 
   setTimeout(nextRound,900);
+
  }
+
 }
 
 
-/* =========================================
+/* =====================================================
    SEQUENCE
-========================================= */
+===================================================== */
 
 function beginSequence(){
 
  const length=
-  3+Math.min(
-   game.round,
-   5
+  Math.min(
+   3+game.round,
+   7
   );
 
  const seq=[];
 
- for(let i=0;i<length;i++){
+ for(
+  let i=0;
+  i<length;
+  i++
+ ){
+
   seq.push(
-   Math.floor(Math.random()*9)
+   Math.floor(
+    Math.random()*9
+   )
   );
+
  }
 
  game.state={
   sequence:seq,
   phase:"show",
+  showIndex:-1,
   answered:{}
  };
 
  gameBroadcast();
  renderGameState();
 
- let index=0;
+ let index=-1;
 
- const timer=setInterval(()=>{
+ const timer=
+  setInterval(()=>{
 
-  index++;
+   index++;
 
-  game.state.showIndex=index;
+   game.state.showIndex=index;
 
-  gameBroadcast();
-  renderGameState();
+   if(index>=seq.length){
 
-  if(index>seq.length){
+    clearInterval(timer);
 
-   clearInterval(timer);
+    game.state.phase="input";
+    game.state.showIndex=-1;
 
-   game.state.phase="input";
-   game.state.showIndex=-1;
+   }
 
    gameBroadcast();
    renderGameState();
-  }
 
- },550);
+  },550);
+
 }
 
 function sequenceAnswer(id,payload){
 
- if(game.state.answered[id])return;
+ if(
+  game.state.answered[id]
+ )return;
+
+ game.state.answered[id]=true;
 
  const answer=
   Array.isArray(payload)
@@ -1584,12 +2723,14 @@ function sequenceAnswer(id,payload){
 
  const good=
   JSON.stringify(answer)===
-  JSON.stringify(game.state.sequence);
-
- game.state.answered[id]=true;
+  JSON.stringify(
+   game.state.sequence
+  );
 
  if(good){
+
   game.scores[id].score++;
+
  }
 
  gameBroadcast();
@@ -1600,14 +2741,16 @@ function sequenceAnswer(id,payload){
   allUsers().length
  ){
 
-  setTimeout(nextRound,1000);
+  setTimeout(nextRound,900);
+
  }
+
 }
 
 
-/* =========================================
-   NEXT
-========================================= */
+/* =====================================================
+   NEXT ROUND
+===================================================== */
 
 function nextRound(){
 
@@ -1624,63 +2767,62 @@ function nextRound(){
   beginRound();
 
  }
+
 }
+
+
+/* =====================================================
+   FINISH
+===================================================== */
 
 function finishGame(){
 
  game.running=false;
 
- const ranking=
+ clearInterval(
+  window.targetTimer
+ );
+
+ game.results=
   Object.entries(game.scores)
    .map(([id,v])=>({
-    id,
-    ...v
+    id:id,
+    name:v.name,
+    score:v.score,
+    times:v.times
    }))
-   .sort((a,b)=>b.score-a.score);
-
- game.results=ranking;
+   .sort(
+    (a,b)=>b.score-a.score
+   );
 
  gameBroadcast();
  renderGameState();
+
 }
 
 
-/* =========================================
-   RENDER
-========================================= */
-
-function renderGameState(){
-
- if(!game.running && game.results?.length){
-
-  renderResults();
-  return;
- }
-
- if(!game.type){
-
-  showMenu();
-  return;
- }
-
- if(game.type==="reaction")renderReaction();
- if(game.type==="target")renderTarget();
- if(game.type==="memory")renderMemory();
- if(game.type==="math")renderMath();
- if(game.type==="color")renderColor();
- if(game.type==="sequence")renderSequence();
-}
-
+/* =====================================================
+   GAME TOP
+===================================================== */
 
 function gameTop(title,desc){
 
  return `
  <div class="playArea">
+
   <h2>${title}</h2>
+
   <div class="playInfo">
-   ${desc}<br>
+   ${desc}
+   <br>
    <span class="small">
-    ${game.mode==="solo"?"개인전":"2팀전"} · ${game.round}/3 라운드
+    ${
+     game.mode==="solo"
+      ?"개인전"
+      :"2팀전"
+    }
+    ·
+    ${game.round}/3 라운드
    </span>
   </div>
  `;
@@ -1688,20 +2830,23 @@ function gameTop(title,desc){
 }
 
 
-/* REACTION */
+/* =====================================================
+   REACTION RENDER
+===================================================== */
 
 function renderReaction(){
 
- const phase=game.state.phase;
+ const phase=
+  game.state.phase;
 
  let text="준비하세요";
 
  if(phase==="red"){
-  text="빨간색 — 기다리세요!";
+  text="🔴 기다리세요!";
  }
 
  if(phase==="green"){
-  text="🟢 지금!!!";
+  text="🟢 지금 터치!";
  }
 
  if(phase==="false"){
@@ -1711,31 +2856,62 @@ function renderReaction(){
  $("gameBody").innerHTML=
   gameTop(
    "⚡ 순간 반응",
-   "초록색으로 바뀌는 순간 최대한 빨리 누르세요."
+   "초록색으로 바뀌는 순간 화면을 터치하세요."
   )+
  `
- <button
-  class="reactionBoard ${phase==="green"?"green":phase==="false"?"false":""}"
-  onclick="gameCommand('reactionClick')"
- >
-  ${text}
- </button>
+  <button
+   class="
+    reactionBoard
+    ${
+     phase==="green"
+      ?"green"
+      :phase==="false"
+       ?"false"
+       :""
+    }
+   "
+   ontouchstart="gameCommand('reactionClick')"
+   onclick="gameCommand('reactionClick')"
+  >
+   ${text}
+  </button>
 
- <div class="small" style="margin-top:15px">
-  이번 라운드 결과
-  ${Object.entries(game.state.clicks||{})
-   .map(([id,ms])=>{
-    const s=game.scores[id];
-    return `<br>${escapeHTML(s?.name||"플레이어")} : ${ms}ms`;
-   }).join("")}
- </div>
+  <div class="small" style="margin-top:10px">
+
+   ${
+    Object.entries(
+     game.state.clicks||{}
+    )
+    .map(([id,ms])=>{
+
+     const s=
+      game.scores[id];
+
+     return `
+      ${escapeHTML(s?.name||"플레이어")}
+      :
+      ${
+       ms>=9999
+        ?"실격"
+        :ms+"ms"
+      }
+      <br>
+     `;
+
+    }).join("")
+   }
+
+  </div>
 
  </div>
  `;
+
 }
 
 
-/* TARGET */
+/* =====================================================
+   TARGET RENDER
+===================================================== */
 
 function renderTarget(){
 
@@ -1744,7 +2920,7 @@ function renderTarget(){
  $("gameBody").innerHTML=
   gameTop(
    "🎯 타겟 클릭",
-   `남은 시간: ${s.time}초 · 타겟을 최대한 많이 누르세요.`
+   `남은 시간: ${s.time}초`
   )+
  `
  <div class="gameBoard">
@@ -1755,24 +2931,37 @@ function renderTarget(){
     left:${s.target.x}%;
     top:${s.target.y}%;
    "
+   ontouchstart="
+    event.preventDefault();
+    gameCommand('targetClick')
+   "
    onclick="gameCommand('targetClick')"
   ></button>
 
  </div>
 
  <div class="small">
-  현재 클릭 수:
-  ${Object.entries(game.scores)
-   .map(([id,v])=>`${escapeHTML(v.name)} ${v.score}회`)
-   .join(" · ")}
+
+  ${
+   Object.entries(game.scores)
+    .map(([id,v])=>
+     escapeHTML(v.name)+
+     " "+v.score+"회"
+    )
+    .join(" · ")
+  }
+
  </div>
 
  </div>
  `;
+
 }
 
 
-/* MEMORY */
+/* =====================================================
+   MEMORY RENDER
+===================================================== */
 
 function renderMemory(){
 
@@ -1787,21 +2976,29 @@ function renderMemory(){
   )+
  `
  <div class="numberBox">
-  ${s.visible?s.number:"?????"}
+  ${
+   s.visible
+    ?s.number
+    :"?????"
+  }
  </div>
 
  ${
   s.visible
    ?""
    :`
+
     <input
      id="answer"
      class="answerInput"
      maxlength="5"
      inputmode="numeric"
+     autocomplete="off"
      placeholder="숫자 입력"
     >
+
     <br>
+
     <button
      class="actionBtn"
      onclick="
@@ -1810,16 +3007,32 @@ function renderMemory(){
        document.getElementById('answer').value
       )
      "
-    >제출</button>
+    >
+     제출
+    </button>
    `
  }
 
  </div>
  `;
+
+ if(!s.visible){
+
+  const input=
+   document.getElementById("answer");
+
+  if(input){
+   input.focus();
+  }
+
+ }
+
 }
 
 
-/* MATH */
+/* =====================================================
+   MATH RENDER
+===================================================== */
 
 function renderMath(){
 
@@ -1839,6 +3052,7 @@ function renderMath(){
   id="answer"
   class="answerInput"
   inputmode="numeric"
+  autocomplete="off"
   placeholder="정답"
  >
 
@@ -1852,14 +3066,26 @@ function renderMath(){
     document.getElementById('answer').value
    )
   "
- >제출</button>
+ >
+  제출
+ </button>
 
  </div>
  `;
+
+ const input=
+  document.getElementById("answer");
+
+ if(input){
+  input.focus();
+ }
+
 }
 
 
-/* COLOR */
+/* =====================================================
+   COLOR RENDER
+===================================================== */
 
 function renderColor(){
 
@@ -1869,41 +3095,52 @@ function renderColor(){
  $("gameBody").innerHTML=
   gameTop(
    "🟢 색깔 맞히기",
-   `정답 색: ${c.name}`
+   "아래 색과 같은 색을 선택하세요."
   )+
  `
  <div
   style="
-   margin:30px auto;
-   width:180px;height:130px;
+   margin:22px auto;
+   width:min(180px,45vw);
+   height:min(130px,30vw);
    border-radius:20px;
    background:${c.value};
-   border:4px solid white
+   border:4px solid white;
   "
  ></div>
 
  <div class="colorChoices">
 
-  ${colors.map((x,i)=>`
+  ${
+   colors.map((x,i)=>`
 
-   <button
-    class="colorChoice"
-    style="background:${x.value}"
-    onclick="gameCommand('colorAnswer',${i})"
-   >
-    ${x.name}
-   </button>
+    <button
+     class="colorChoice"
+     style="background:${x.value}"
+     onclick="
+      gameCommand(
+       'colorAnswer',
+       ${i}
+      )
+     "
+    >
+     ${x.name}
+    </button>
 
-  `).join("")}
+   `).join("")
+  }
 
  </div>
 
  </div>
  `;
+
 }
 
 
-/* SEQUENCE */
+/* =====================================================
+   SEQUENCE RENDER
+===================================================== */
 
 function renderSequence(){
 
@@ -1913,37 +3150,66 @@ function renderSequence(){
 
  if(s.phase==="show"){
 
+  let value="●";
+
+  if(
+   s.showIndex>=0 &&
+   s.showIndex<s.sequence.length
+  ){
+
+   value=
+    s.sequence[s.showIndex]+1;
+
+  }
+
   html=`
-   <div class="numberBox" style="font-size:40px">
-    ${s.showIndex>=0&&s.showIndex<s.sequence.length
-      ?s.sequence[s.showIndex]+1
-      :"●"}
+
+   <div
+    class="numberBox"
+    style="font-size:45px"
+   >
+    ${value}
    </div>
-   <p>순서를 기억하세요!</p>
+
+   <p>
+    순서를 기억하세요!
+   </p>
+
   `;
 
  }else{
 
   html=`
-   <p>나온 순서대로 버튼을 누르세요.</p>
+
+   <p>
+    나온 순서대로 버튼을 누르세요.
+   </p>
 
    <div class="sequenceGrid">
 
-    ${Array.from({length:9},(_,i)=>`
+    ${
+     Array.from(
+      {length:9},
+      (_,i)=>`
 
-     <button
-      class="seqBtn"
-      onclick="sequenceLocal(${i})"
-     >
-      ${i+1}
-     </button>
+       <button
+        class="seqBtn"
+        onclick="sequenceLocal(${i})"
+       >
+        ${i+1}
+       </button>
 
-    `).join("")}
+      `
+     ).join("")
+    }
 
    </div>
 
-   <div id="seqCurrent">
-    입력: 
+   <div
+    id="seqCurrent"
+    class="small"
+   >
+    입력:
    </div>
 
    <button
@@ -1952,69 +3218,106 @@ function renderSequence(){
    >
     제출
    </button>
+
   `;
+
  }
 
  $("gameBody").innerHTML=
   gameTop(
    "🧩 순서 기억",
-   "불이 들어온 버튼의 순서를 기억하세요."
+   "나타난 버튼 순서를 기억하세요."
   )+
   html+
   "</div>";
-}
 
-let localSequence=[];
+}
 
 function sequenceLocal(n){
 
- if(localSequence.length>=game.state.sequence.length)return;
+ if(
+  localSequence.length>=
+  game.state.sequence.length
+ )return;
 
  localSequence.push(n);
 
- renderSequenceLocal();
-}
+ const buttons=
+  document.querySelectorAll(".seqBtn");
 
-function renderSequenceLocal(){
+ const b=
+  buttons[n];
 
- const box=$("seqCurrent");
+ if(b){
+
+  b.classList.add("lit");
+
+  setTimeout(
+   ()=>b.classList.remove("lit"),
+   130
+  );
+
+ }
+
+ const box=
+  document.getElementById("seqCurrent");
 
  if(box){
+
   box.textContent=
    "입력: "+
-   localSequence.map(x=>x+1).join(" → ");
+   localSequence
+    .map(x=>x+1)
+    .join(" → ");
+
  }
+
 }
 
 function sequenceSubmit(){
 
- const a=[...localSequence];
+ const answer=
+  [...localSequence];
 
  localSequence=[];
 
  gameCommand(
   "sequenceAnswer",
-  a
- );
-}
+  answer
+);
 
 
-/* =========================================
+/* =====================================================
    RESULTS
-========================================= */
+===================================================== */
 
 function renderResults(){
 
  const rows=
-  game.results.map((x,i)=>`
-   <div class="resultRow">
-    <span>
-     ${i===0?"🏆 ":""}${i+1}위
-     ${escapeHTML(x.name)}
-    </span>
-    <b>${x.score}점</b>
-   </div>
-  `).join("");
+  game.results
+   .map((x,i)=>`
+
+    <div class="resultRow">
+
+     <span>
+      ${
+       i===0
+        ?"🏆 "
+        :""
+      }
+
+      ${i+1}위
+      ${escapeHTML(x.name)}
+     </span>
+
+     <b>
+      ${x.score}점
+     </b>
+
+    </div>
+
+   `)
+   .join("");
 
  $("gameBody").innerHTML=`
 
@@ -2025,9 +3328,13 @@ function renderResults(){
   <div class="result">
 
    <h2>
-    ${game.results[0]
-      ?escapeHTML(game.results[0].name)+" 승리!"
-      :"게임 종료"}
+    ${
+     game.results[0]
+      ?escapeHTML(
+       game.results[0].name
+      )+" 승리!"
+      :"게임 종료"
+    }
    </h2>
 
    ${rows}
@@ -2037,47 +3344,153 @@ function renderResults(){
   ${
    host
     ?`
+
      <button
       class="actionBtn"
       onclick="showMenu()"
      >
       다른 게임 선택
      </button>
+
     `
     :""
   }
 
  </div>
+
  `;
+
 }
 
 
-/* =========================================
-   ESCAPE
-========================================= */
+/* =====================================================
+   RENDER GAME
+===================================================== */
 
-function escapeHTML(s){
+function renderGameState(){
 
- return String(s||"")
-  .replace(/&/g,"&amp;")
-  .replace(/</g,"&lt;")
-  .replace(/>/g,"&gt;")
-  .replace(/"/g,"&quot;")
-  .replace(/'/g,"&#039;");
+ if(
+  !game.running &&
+  game.results &&
+  game.results.length
+ ){
+
+  renderResults();
+  return;
+ }
+
+ if(!game.type){
+
+  showMenu();
+  return;
+ }
+
+ if(game.type==="reaction")
+  renderReaction();
+
+ if(game.type==="target")
+  renderTarget();
+
+ if(game.type==="memory")
+  renderMemory();
+
+ if(game.type==="math")
+  renderMath();
+
+ if(game.type==="color")
+  renderColor();
+
+ if(game.type==="sequence")
+  renderSequence();
+
 }
 
 
-/* =========================================
-   INIT
-========================================= */
+/* =====================================================
+   MOBILE KEYBOARD ENTER
+===================================================== */
 
-$("name").addEventListener("keydown",e=>{
- if(e.key==="Enter")$("create").click();
-});
+document.addEventListener(
+ "keydown",
+ e=>{
 
-$("joinCode").addEventListener("keydown",e=>{
- if(e.key==="Enter")$("join").click();
-});
+  if(
+   e.key==="Enter" &&
+   document.activeElement?.id==="answer"
+  ){
+
+   if(game.type==="memory"){
+
+    gameCommand(
+     "memoryAnswer",
+     document.activeElement.value
+    );
+
+   }
+
+   if(game.type==="math"){
+
+    gameCommand(
+     "mathAnswer",
+     document.activeElement.value
+    );
+
+   }
+
+  }
+
+ }
+);
+
+
+/* =====================================================
+   START ENTER
+===================================================== */
+
+$("name").addEventListener(
+ "keydown",
+ e=>{
+
+  if(e.key==="Enter"){
+   $("create").click();
+  }
+
+ }
+);
+
+$("joinCode").addEventListener(
+ "keydown",
+ e=>{
+
+  if(e.key==="Enter"){
+   $("join").click();
+  }
+
+ }
+);
+
+
+/* =====================================================
+   PREVENT DOUBLE TOUCH ZOOM / LONG PRESS
+===================================================== */
+
+document.addEventListener(
+ "contextmenu",
+ e=>{
+  if(
+   e.target.closest("#gamePanel")
+  ){
+   e.preventDefault();
+  }
+ }
+);
+
+document.addEventListener(
+ "gesturestart",
+ e=>{
+  e.preventDefault();
+ }
+);
 
 </script>
 
